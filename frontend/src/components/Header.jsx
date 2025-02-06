@@ -38,7 +38,6 @@ const Header = () => {
         <Box sx={{ display: 'flex', gap: 3 }}>
           <Typography
             className='link'
-            variant='h6'
             component='a'
             href='/features'
             sx={{
@@ -51,7 +50,6 @@ const Header = () => {
           </Typography>
           <Typography
             className='link'
-            variant='h6'
             component='a'
             href='/solutions'
             sx={{
