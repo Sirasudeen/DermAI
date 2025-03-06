@@ -1,0 +1,22 @@
+# Core Dependencies
+numpy
+pandas
+faiss-cpu  
+scikit-learn
+tqdm
+
+# BM25 Search
+rank-bm25
+nltk
+
+# Hugging Face Transformers (For BioBERT)
+torch
+transformers
+sentence-transformers
+
+# FastAPI for API Deployment
+fastapi
+uvicorn
+
+requests
+beautifulsoup4
