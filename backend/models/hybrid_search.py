@@ -18,19 +18,19 @@ except FileNotFoundError:
     exit()
 
 # Load FAISS index
-FAISS_INDEX_PATH = os.path.join(BASE_DIR, "..", "data", "faiss_ivfpq.index")
+FAISS_INDEX_PATH = os.path.join(BASE_DIR, "..", "data", "faiss_ivfpq_latest.index")
 try:
     index = faiss.read_index(FAISS_INDEX_PATH)
     print(f"FAISS index loaded with {index.ntotal} vectors.")
 except FileNotFoundError:
-    print(f" Error: FAISS index not found at {FAISS_INDEX_PATH}.")
+    print(f"Error: FAISS index not found at {FAISS_INDEX_PATH}.")
     exit()
 
 BM25_PATH = os.path.join(BASE_DIR, "..", "data", "faiss_bm25.pkl")
 try:
     with open(BM25_PATH, "rb") as f:
         bm25, tokenized_corpus = pickle.load(f) 
-    print(" BM25 index loaded.")
+    print("BM25 index loaded.")
 except FileNotFoundError:
     print(f"Error: BM25 index not found at {BM25_PATH}.")
     exit()
@@ -46,29 +46,49 @@ def get_embedding(text):
     with torch.no_grad():
         outputs = model(**inputs)
     return outputs.last_hidden_state[:, 0, :].cpu().numpy().squeeze()  
-def hybrid_search(query, top_k=5):
-    query_embedding = np.array([get_embedding(query)], dtype="float32")
-    _, faiss_indices = index.search(query_embedding, top_k)
-    faiss_results = df.iloc[faiss_indices[0]]
 
+def normalize_scores(scores):
+    """Normalize scores to a range of 0 to 1, avoiding NaN issues."""
+    if len(scores) == 0 or np.max(scores) == np.min(scores):
+        return np.zeros_like(scores)
+    return (scores - np.min(scores)) / (np.max(scores) - np.min(scores))
+
+def hybrid_search(query, top_k=5, bm25_weight=0.5, faiss_weight=0.5):
+    query_embedding = np.array([get_embedding(query)], dtype="float32")
+
+    # FAISS Search
+    _, faiss_indices = index.search(query_embedding, top_k)
+    faiss_results = df.iloc[faiss_indices[0]].copy()
+    faiss_results["FAISS_Score"] = normalize_scores(np.linspace(1, 0, len(faiss_results)))  # Rank-based normalization
+
+    # BM25 Search
     bm25_scores = bm25.get_scores(query.split())
     bm25_top_indices = np.argsort(bm25_scores)[::-1][:top_k]
-    bm25_results = df.iloc[bm25_top_indices].copy()  
-    max_score = np.max(bm25_scores)
-    if max_score > 0:
-        bm25_results.loc[:, "BM25_Score"] = bm25_scores[bm25_top_indices] / max_score  # Normalize
-    else:
-        bm25_results.loc[:, "BM25_Score"] = 0 
+    bm25_results = df.iloc[bm25_top_indices].copy()
+    bm25_results["BM25_Score"] = normalize_scores(bm25_scores[bm25_top_indices])
 
-    hybrid_results = pd.concat([faiss_results, bm25_results]).drop_duplicates().reset_index(drop=True)
+    # Merge Results
+    hybrid_results = pd.merge(faiss_results, bm25_results, on=["ConceptID", "Term", "Definition"], how="outer")
+
+    # Fill missing scores with 0
+    hybrid_results["FAISS_Score"] = hybrid_results["FAISS_Score"].fillna(0.0)
+    hybrid_results["BM25_Score"] = hybrid_results["BM25_Score"].fillna(0.0)
+
+    # Weighted Score Combination
+    hybrid_results["Hybrid_Score"] = (
+        bm25_weight * hybrid_results["BM25_Score"] +
+        faiss_weight * hybrid_results["FAISS_Score"]
+    )
+
+    # Sort by Hybrid Score
+    hybrid_results = hybrid_results.sort_values(by="Hybrid_Score", ascending=False)
 
     return hybrid_results
-
 
 query = "red skin rash"
 results = hybrid_search(query)
 
-print("\n🔍 **Top Hybrid Search Results:**")
+print("\n🔍 **Top Hybrid Search Results for 'red skin rash':**")
 print(results)
 
 query2 = "eczema"
