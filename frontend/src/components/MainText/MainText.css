@@ -1,21 +1,17 @@
-
-
 .main-text {
-  color: #cdc5c5a4; 
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 60%
-  );
+  color: #cdc5c5a4;
+  background: linear-gradient(120deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 255, 255, 0) 60%);
   width: 60vw;
   font-family: 'Poppins';
-  font-size: 4.5em;
-  margin:0,
-  background-size: 200% 100%;
+  font-size: clamp(2rem, min(9vh, 5vw), 4.5rem);
+  margin: 0,
+    background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  display: inline-block;  
+  display: inline-block;
   animation: shine 2s linear infinite;
 }
 
@@ -23,10 +19,8 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
 }
-
-
-

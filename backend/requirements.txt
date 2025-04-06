@@ -18,5 +18,11 @@ sentence-transformers
 fastapi
 uvicorn
 
+# Flask and OpenAI
+flask
+flask-cors
+openai
+python-dotenv
+
 requests
 beautifulsoup4

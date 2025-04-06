@@ -1,0 +1,25 @@
+# Core Dependencies
+numpy
+pandas
+faiss-cpu  
+scikit-learn
+tqdm
+
+# BM25 Search
+rank-bm25
+nltk
+
+# Hugging Face Transformers (For BioBERT)
+torch
+transformers
+sentence-transformers
+
+# Flask and OpenAI
+flask
+flask-cors
+openai>=1.0.0
+python-dotenv
+
+# Utilities
+requests
+beautifulsoup4 

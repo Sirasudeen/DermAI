@@ -1,0 +1,45 @@
+2025-04-03 00:42:42,419 - INFO - Loaded 466 embeddings with dimension 768
+2025-04-03 00:42:42,440 - INFO - Building IVFPQ index with 21 clusters, 64 subvectors, 8 bits per code
+2025-04-03 00:42:42,441 - INFO - Training index...
+2025-04-03 00:42:42,722 - INFO - Training completed in 0.28 seconds
+2025-04-03 00:42:42,723 - INFO - Adding vectors to index...
+2025-04-03 00:42:42,735 - INFO - Added 466 vectors in 0.01 seconds
+2025-04-03 00:42:42,735 - INFO - Search parameter nprobe set to 2
+2025-04-03 00:42:42,736 - INFO - Testing search performance with 100 queries...
+2025-04-03 00:42:42,800 - INFO - Average search time: 0.64 ms per query
+2025-04-03 00:42:42,801 - INFO - Queries per second: 1560.03 QPS
+2025-04-03 00:42:42,802 - INFO - FAISS index saved to c:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\..\data\faiss_ivfpq_20250403-004242.index
+2025-04-03 00:42:42,804 - INFO - Index metadata saved to c:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\..\data\faiss_ivfpq_20250403-004242_meta.pkl
+2025-04-03 00:42:42,805 - ERROR - Error building index: [WinError 1314] A required privilege is not held by the client: 'c:\\Users\\Siras\\Desktop\\DermAI\\backend\\RagMicroService\\models\\..\\data\\faiss_ivfpq_20250403-004242.index' -> 'c:\\Users\\Siras\\Desktop\\DermAI\\backend\\RagMicroService\\models\\..\\data\\faiss_ivfpq_latest.index'
+2025-04-03 00:42:42,807 - ERROR - Traceback (most recent call last):
+  File "c:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\faiss_store.py", line 307, in main
+    index_path = builder.build()
+  File "c:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\faiss_store.py", line 272, in build
+    index_path = self.save_index(index, metadata)
+  File "c:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\faiss_store.py", line 233, in save_index
+    os.symlink(index_path, latest_path)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 1314] A required privilege is not held by the client: 'c:\\Users\\Siras\\Desktop\\DermAI\\backend\\RagMicroService\\models\\..\\data\\faiss_ivfpq_20250403-004242.index' -> 'c:\\Users\\Siras\\Desktop\\DermAI\\backend\\RagMicroService\\models\\..\\data\\faiss_ivfpq_latest.index'
+
+2025-04-03 00:44:20,489 - INFO - Loaded 466 embeddings with dimension 768
+2025-04-03 00:44:20,491 - INFO - Building IVFPQ index with 21 clusters, 64 subvectors, 8 bits per code
+2025-04-03 00:44:20,492 - INFO - Training index...
+2025-04-03 00:44:20,663 - INFO - Training completed in 0.17 seconds
+2025-04-03 00:44:20,663 - INFO - Adding vectors to index...
+2025-04-03 00:44:20,674 - INFO - Added 466 vectors in 0.01 seconds
+2025-04-03 00:44:20,674 - INFO - Search parameter nprobe set to 2
+2025-04-03 00:44:20,675 - INFO - Testing search performance with 100 queries...
+2025-04-03 00:44:20,684 - INFO - Average search time: 0.09 ms per query
+2025-04-03 00:44:20,685 - INFO - Queries per second: 10836.59 QPS
+2025-04-03 00:44:20,692 - INFO - Index build complete in 0.20 seconds
+2025-04-03 04:49:39,855 - INFO - Loaded 466 embeddings with dimension 768
+2025-04-03 04:49:39,857 - INFO - Building IVFPQ index with 21 clusters, 64 subvectors, 8 bits per code
+2025-04-03 04:49:39,895 - INFO - Training index...
+2025-04-03 04:49:40,081 - INFO - Training completed in 0.19 seconds
+2025-04-03 04:49:40,081 - INFO - Adding vectors to index...
+2025-04-03 04:49:40,091 - INFO - Added 466 vectors in 0.01 seconds
+2025-04-03 04:49:40,092 - INFO - Search parameter nprobe set to 2
+2025-04-03 04:49:40,092 - INFO - Testing search performance with 100 queries...
+2025-04-03 04:49:40,117 - INFO - Average search time: 0.24 ms per query
+2025-04-03 04:49:40,117 - INFO - Queries per second: 4194.14 QPS
+2025-04-03 04:49:40,149 - INFO - Index build complete in 0.30 seconds

@@ -1,11 +1,23 @@
-import { AppBar, Toolbar, Button, Typography, Box } from '@mui/material';
+/* eslint-disable react/prop-types */
+import { AppBar, Toolbar, Button, Typography, Box, useMediaQuery } from '@mui/material';
 import gsap from 'gsap';
 import { Timeline } from 'gsap/gsap-core';
+import { useAuth } from '../context/AuthContext';
 import { useGSAP } from '@gsap/react';
 gsap.registerPlugin(Timeline, useGSAP);
+import Magnet from './../animations/Animations/Magnet/Magnet'
+import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
+
+
+
+
 
 const Header = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
   useGSAP(() => {
+
     const tl = gsap.timeline();
     tl.fromTo(
       '.link',
@@ -21,7 +33,21 @@ const Header = () => {
         ease: 'cubic-bezier(.75,.02,.65,.9)',
       }
     );
-  });
+  }, []);
+
+  const Btn = ({ children, onClick }) => {
+    return (
+      <Magnet padding={20} disabled={false} magnetStrength={10}>
+        <Button
+          className='link'
+          onClick={onClick}
+          sx={{ color: 'black', fontFamily: 'Poppins' }}
+        >
+          {children}
+        </Button>
+      </Magnet>
+    );
+  }
   return (
     <AppBar
       sx={{
@@ -36,32 +62,12 @@ const Header = () => {
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', gap: 3 }}>
-          <Typography
-            className='link'
-            component='a'
-            href='/features'
-            sx={{
-              textDecoration: 'none',
-              fontFamily: 'Poppins',
-              color: 'black',
-            }}
-          >
-            Features
-          </Typography>
-          <Typography
-            className='link'
-            component='a'
-            href='/solutions'
-            sx={{
-              textDecoration: 'none',
-              fontFamily: 'Poppins',
-              color: 'black',
-            }}
-          >
-            Solutions
-          </Typography>
+          <Btn onClick={() => navigate('/')}  > Home</Btn>
+          <Btn onClick={() => navigate('/features')} > Features</Btn>
+
         </Box>
-        <Typography
+        {useMediaQuery("(min-width:799px)") && <Typography
+
           className='link'
           variant='h4'
           component='div'
@@ -73,26 +79,27 @@ const Header = () => {
           }}
         >
           DERM AI
-        </Typography>
+        </Typography>}
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            className='link'
-            href='/login'
-            sx={{ color: 'black', fontFamily: 'Poppins' }}
-          >
-            Login
-          </Button>
-          <Button
-            className='link'
-            href='/signup'
-            sx={{ color: 'black', fontFamily: 'Poppins' }}
-          >
-            Signup
-          </Button>
+          {auth?.isLoggedIn ? (
+
+            <>
+
+              <Btn onClick={() => navigate("/chat")} > Go to Chat</Btn>
+              <Btn onClick={(e) => {
+                auth.logout();
+              }}>Logout</Btn>
+            </>) : (<>
+
+              <Btn onClick={() => navigate('/login')} > Login</Btn>
+              <Btn onClick={() => navigate('/signup')} > Signup</Btn>
+
+            </>)}
+
         </Box>
       </Toolbar>
-    </AppBar>
+    </AppBar >
   );
 };
 
