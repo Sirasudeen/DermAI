@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+venv
 
 biobert_snomed_embeddings.npy
