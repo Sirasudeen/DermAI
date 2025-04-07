@@ -1,0 +1,56 @@
+2025-04-06 04:33:18,121 - INFO - Loaded 466 embeddings with dimension 768
+2025-04-06 04:33:18,122 - INFO - Building IVFPQ index with 21 clusters, 64 subvectors, 8 bits per code
+2025-04-06 04:33:18,143 - INFO - Training index...
+2025-04-06 04:33:18,317 - INFO - Training completed in 0.17 seconds
+2025-04-06 04:33:18,318 - INFO - Adding vectors to index...
+2025-04-06 04:33:18,326 - INFO - Added 466 vectors in 0.01 seconds
+2025-04-06 04:33:18,326 - INFO - Search parameter nprobe set to 2
+2025-04-06 04:33:18,326 - INFO - Testing search performance with 100 queries...
+2025-04-06 04:33:18,338 - INFO - Average search time: 0.11 ms per query
+2025-04-06 04:33:18,338 - INFO - Queries per second: 9138.91 QPS
+2025-04-06 04:33:18,344 - INFO - Index build complete in 0.23 seconds
+2025-04-06 04:55:00,816 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\faiss_store.py", line 310, in main
+    index_path = builder.build()
+                 ^^^^^^^^^^^^^
+AttributeError: 'FAISSBuilder' object has no attribute 'build'
+
+2025-04-06 04:56:32,716 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Siras\Desktop\DermAI\backend\RagMicroService\models\faiss_store.py", line 311, in main
+    index_path = builder.build()
+                 ^^^^^^^^^^^^^
+AttributeError: 'FAISSBuilder' object has no attribute 'build'
+
+2025-04-06 04:57:53,294 - INFO - Loaded 466 embeddings with dimension 768
+2025-04-06 04:57:53,295 - INFO - Building IVFPQ index with 21 clusters, 64 subvectors, 8 bits per code
+2025-04-06 04:57:53,296 - INFO - Training index...
+2025-04-06 04:57:53,401 - INFO - Training completed in 0.10 seconds
+2025-04-06 04:57:53,401 - INFO - Adding vectors to index...
+2025-04-06 04:57:53,408 - INFO - Added 466 vectors in 0.01 seconds
+2025-04-06 04:57:53,408 - INFO - Search parameter nprobe set to 2
+2025-04-06 04:57:53,408 - INFO - Testing search performance with 100 queries...
+2025-04-06 04:57:53,417 - INFO - Average search time: 0.09 ms per query
+2025-04-06 04:57:53,418 - INFO - Queries per second: 11406.86 QPS
+2025-04-06 04:57:53,425 - INFO - Index build complete in 0.15 seconds
+2025-04-06 05:02:01,914 - INFO - Loaded 476 embeddings with dimension 768
+2025-04-06 05:02:01,915 - INFO - Building IVFPQ index with 21 clusters, 64 subvectors, 8 bits per code
+2025-04-06 05:02:01,916 - INFO - Training index...
+2025-04-06 05:02:02,039 - INFO - Training completed in 0.12 seconds
+2025-04-06 05:02:02,040 - INFO - Adding vectors to index...
+2025-04-06 05:02:02,052 - INFO - Added 476 vectors in 0.01 seconds
+2025-04-06 05:02:02,052 - INFO - Search parameter nprobe set to 2
+2025-04-06 05:02:02,052 - INFO - Testing search performance with 100 queries...
+2025-04-06 05:02:02,061 - INFO - Average search time: 0.09 ms per query
+2025-04-06 05:02:02,062 - INFO - Queries per second: 11657.00 QPS
+2025-04-06 05:02:02,066 - INFO - Index build complete in 0.16 seconds
+2025-04-06 06:43:05,093 - INFO - Loaded 40780 embeddings with dimension 768
+2025-04-06 06:43:05,167 - INFO - Building IVFPQ index with 201 clusters, 64 subvectors, 8 bits per code
+2025-04-06 06:43:05,180 - INFO - Training index...
+2025-04-06 06:43:09,388 - INFO - Training completed in 4.21 seconds
+2025-04-06 06:43:09,388 - INFO - Adding vectors to index...
+2025-04-06 06:43:09,972 - INFO - Added 40780 vectors in 0.58 seconds
+2025-04-06 06:43:09,972 - INFO - Search parameter nprobe set to 20
+2025-04-06 06:43:09,973 - INFO - Testing search performance with 100 queries...
+2025-04-06 06:43:10,024 - INFO - Average search time: 0.52 ms per query
+2025-04-06 06:43:10,025 - INFO - Queries per second: 1938.63 QPS
+2025-04-06 06:43:10,062 - INFO - Index build complete in 5.05 seconds
