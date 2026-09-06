@@ -1,0 +1,36 @@
+.aperture {
+  min-height: 60vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.2rem;
+}
+
+.aperture__iris { width: 60px; height: 60px; }
+
+.aperture__rim {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.aperture__blade {
+  fill: none;
+  stroke: var(--ochre);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-origin: 30px 30px;
+  opacity: 0.25;
+  animation: blade-open 1.4s var(--ease-in-out) infinite;
+}
+
+@keyframes blade-open {
+  0%, 100% { opacity: 0.18; }
+  40% { opacity: 1; }
+}
+
+.aperture__label {
+  color: var(--faint);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}

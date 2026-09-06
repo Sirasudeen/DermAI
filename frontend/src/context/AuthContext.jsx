@@ -1,96 +1,92 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { checkAuthStatus, loginUser, logoutUser, signupUser } from "../helpers/api-communicator";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  checkAuthStatus,
+  loginUser,
+  logoutUser,
+  signupUser,
+} from "../helpers/api-communicator";
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-    const location = useLocation();
-    console.log(isLoggedIn);
+/*
+ * The session is resolved once on mount. The old version re-checked on every
+ * route change and pushed /login from inside the provider; guarding is now
+ * ProtectedRoute's job, which keeps navigation out of this file entirely.
+ */
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [status, setStatus] = useState("checking");
 
-    useEffect(() => {
-        const publicRoutes = ["/login", "/signup", "/features", "/"];
-        if (publicRoutes.includes(location.pathname)) {
-            setLoading(false);
-            return;
-        }
+  useEffect(() => {
+    let active = true;
 
-        async function checkStatus() {
-            try {
-                const data = await checkAuthStatus();
-                if (data && data.user) {
-                    setUser({ email: data.user.email, name: data.user.name });
-                    setIsLoggedIn(true);
-                }
-            } catch (error) {
-                console.error("Authentication check failed:", error);
-                setIsLoggedIn(false);
-                setUser(null);
-                if (!publicRoutes.includes(location.pathname)) {
-                    navigate("/login");
-                }
-            } finally {
-                setLoading(false);
-            }
+    checkAuthStatus()
+      .then((data) => {
+        if (!active) return;
+        if (data?.user) {
+          setUser({ name: data.user.name, email: data.user.email });
+          setStatus("in");
+        } else {
+          setStatus("out");
         }
-        checkStatus();
-    }, [location.pathname, navigate]);
+      })
+      .catch(() => {
+        if (active) setStatus("out");
+      });
 
-    const login = async (email, password) => {
-        try {
-            await loginUser(email, password);
-            const authData = await checkAuthStatus();
-            if (authData && authData.user) {
-                setUser({ email: authData.user.email, name: authData.user.name });
-                setIsLoggedIn(true);
-                navigate("/chat");
-            }
-        } catch (error) {
-            console.error("Login failed:", error);
-            throw error;
-        }
+    return () => {
+      active = false;
     };
+  }, []);
 
-    const signup = async (name, email, password) => {
-        try {
-            await signupUser(name, email, password);
-            const authData = await checkAuthStatus();
-            if (authData && authData.user) {
-                setUser({ email: authData.user.email, name: authData.user.name });
-                setIsLoggedIn(true);
-                navigate("/chat");
-            }
-        } catch (error) {
-            console.error("Signup failed:", error);
-            throw error;
-        }
-    };
+  const adopt = useCallback((data) => {
+    if (!data?.user) throw new Error("Signed in, but the session did not come back.");
+    setUser({ name: data.user.name, email: data.user.email });
+    setStatus("in");
+  }, []);
 
-    const logout = async () => {
-        try {
-            await logoutUser();
-            setIsLoggedIn(false);
-            setUser(null);
-            navigate("/");
-        } catch (error) {
-            console.error("Logout failed:", error);
-            throw error;
-        }
-    };
+  const login = useCallback(
+    async (email, password) => {
+      await loginUser(email, password);
+      adopt(await checkAuthStatus());
+    },
+    [adopt]
+  );
 
-    if (loading) {
-        return <div>Loading...</div>;
+  const signup = useCallback(
+    async (name, email, password) => {
+      await signupUser(name, email, password);
+      adopt(await checkAuthStatus());
+    },
+    [adopt]
+  );
+
+  const logout = useCallback(async () => {
+    try {
+      await logoutUser();
+    } finally {
+      setUser(null);
+      setStatus("out");
     }
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{ user, isLoggedIn, login, logout, signup }}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
+  const value = useMemo(
+    () => ({
+      user,
+      isLoggedIn: status === "in",
+      isChecking: status === "checking",
+      login,
+      signup,
+      logout,
+    }),
+    [user, status, login, signup, logout]
+  );
 
-export const useAuth = () => useContext(AuthContext);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used inside AuthProvider");
+  return context;
+}

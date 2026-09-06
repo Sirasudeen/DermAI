@@ -1,0 +1,125 @@
+.auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  min-height: calc(100vh - 74px);
+  align-items: stretch;
+}
+
+.auth__panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2.5rem, 7vh, 5rem) var(--gutter);
+  max-width: 40rem;
+  width: 100%;
+  margin-left: auto;
+}
+
+.auth__title {
+  font-size: var(--step-3);
+  margin: 1rem 0 2.6rem;
+  max-width: 14ch;
+}
+
+.auth__form {
+  display: grid;
+  gap: 1.9rem;
+}
+
+.auth__submit {
+  justify-content: center;
+  margin-top: 0.8rem;
+  width: fit-content;
+  padding-inline: 2rem;
+}
+
+.auth__swap {
+  margin-top: 2.4rem;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.auth__swap a {
+  color: var(--ochre);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.35s var(--ease);
+}
+
+.auth__swap a:hover { border-bottom-color: var(--ochre); }
+
+/* ---------- Aside ---------- */
+.auth__aside {
+  position: relative;
+  background: var(--umber-800);
+  border-left: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* A soft dermoscopic field, far enough down to sit behind type. */
+.auth__aside::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(38% 34% at 28% 30%, rgba(201, 139, 75, 0.2), transparent 70%),
+    radial-gradient(42% 38% at 72% 66%, rgba(168, 191, 208, 0.13), transparent 72%),
+    radial-gradient(30% 30% at 52% 88%, rgba(201, 139, 75, 0.12), transparent 70%);
+  filter: blur(10px);
+}
+
+.auth__aside-inner {
+  position: relative;
+  padding: clamp(2.5rem, 6vw, 5rem);
+  max-width: 34rem;
+}
+
+.auth__quote {
+  font-family: var(--body);
+  font-size: var(--step-2);
+  font-style: italic;
+  line-height: 1.42;
+  color: var(--veil);
+  margin-top: 1.2rem;
+}
+
+.auth__stats {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-top: 3rem;
+}
+
+.auth__stats > div {
+  background: var(--umber-800);
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.auth__stats dt {
+  color: var(--faint);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.auth__stats dd {
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 110, "wght" 600;
+  font-size: var(--step-1);
+  color: var(--milk);
+}
+
+@media (max-width: 900px) {
+  .auth { grid-template-columns: 1fr; min-height: 0; }
+  .auth__panel { margin-inline: auto; }
+  .auth__aside { border-left: 0; border-top: 1px solid var(--line); }
+  .auth__aside-inner { margin-inline: auto; }
+}

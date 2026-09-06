@@ -1,0 +1,99 @@
+/*
+  DermAI design tokens.
+
+  The palette is taken from what a dermatoscope actually shows: a polarised
+  view of skin is umber and sepia, the pigment network reads ochre, and the
+  "blue-white veil" is a named dermoscopic sign. Those are the five colours.
+*/
+
+:root {
+  /* Ground */
+  --umber-900: #17100c;
+  --umber-800: #241812;
+  --umber-700: #2f201a;
+  --sepia-600: #3d2c24;
+  --sepia-500: #4d392f;
+  --sepia-400: #63493c;
+
+  /* Signal */
+  --ochre: #c98b4b;
+  --ochre-bright: #e0a765;
+  --ochre-dim: #8c6134;
+  --veil: #a8bfd0;
+  --veil-dim: #6d8798;
+
+  /* Type */
+  --milk: #f2e9df;
+  --dim: #a6907f;
+  --faint: #7a6558;
+
+  /* Roles */
+  --bg: var(--umber-900);
+  --surface: var(--umber-800);
+  --raised: var(--umber-700);
+  --line: rgba(242, 233, 223, 0.11);
+  --line-strong: rgba(242, 233, 223, 0.22);
+
+  /* Type stacks */
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Newsreader", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Scale */
+  --step--1: clamp(0.76rem, 0.73rem + 0.15vw, 0.84rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.12rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.5rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --step-3: clamp(2rem, 1.6rem + 2vw, 3.2rem);
+  --step-4: clamp(2.4rem, 1.7rem + 2.9vw, 4.2rem);
+  --step-5: clamp(2.9rem, 1.4rem + 4.6vw, 5.4rem);
+
+  /* Rhythm */
+  --gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --section: clamp(5rem, 12vh, 10rem);
+  --measure: 62ch;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Micro-label: the chart-field marker used to head every section. */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ochre);
+}
+
+.eyebrow--veil { color: var(--veil-dim); }
+
+/* Archivo carries a width axis; the display voice is the expanded end of it. */
+.display {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 118, "wght" 700;
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.prose {
+  font-family: var(--body);
+  font-size: var(--step-1);
+  line-height: 1.62;
+  color: var(--dim);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.prose em { color: var(--milk); font-style: italic; }
+
+.code {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+  color: var(--veil-dim);
+  font-variant-numeric: tabular-nums;
+}

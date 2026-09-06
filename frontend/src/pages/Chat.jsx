@@ -1,292 +1,251 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-    Box,
-    Avatar,
-    Typography,
-    IconButton,
-    keyframes,
-} from '@mui/material';
-import { useAuth } from '../context/AuthContext';
-import Skeleton from '@mui/material/Skeleton';
-import ChatItem from "../components/chat/ChatItem";
-import { IoMdSend, IoMdTrash } from 'react-icons/io';
-import { useNavigate } from 'react-router-dom';
-import {
-    deleteUserChats,
-    getUserChats,
-    sendChatRequest,
-} from '../helpers/api-communicator';
-import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
-import { getGreetingMessage } from '../helpers/greetings';
-import PageWrapper from '../components/PageWrapper';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import toast from "react-hot-toast";
+import { FiArrowUp, FiTrash2 } from "react-icons/fi";
+import Message from "../components/Message";
+import { useAuth } from "../context/AuthContext";
+import { deleteUserChats, getUserChats, sendChatRequest } from "../helpers/api-communicator";
+import { COMPLAINTS } from "../data/concepts";
+import { EASE } from "../lib/motion";
+import "./Chat.css";
 
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
+const OPENERS = COMPLAINTS.slice(0, 4);
 
-const colorCycle = {
-    animate: {
-        color: ['#FFFFFF', '#D6DEE7', '#B8BFC6', '#B1BED1', '#64748B', '#F8FBFE'],
-        transition: { duration: 2, repeat: Infinity, ease: 'linear' },
+function Thinking() {
+  return (
+    <motion.div
+      className="thinking"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <span className="thinking__dots" aria-hidden="true">
+        <i /><i /><i />
+      </span>
+      <span className="code thinking__label">Searching the terminology</span>
+    </motion.div>
+  );
+}
+
+export default function Chat() {
+  const { user } = useAuth();
+  const [messages, setMessages] = useState([]);
+  const [pending, setPending] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [draft, setDraft] = useState("");
+
+  const streamRef = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    getUserChats()
+      .then((data) => {
+        if (active) setMessages(data?.chats ?? []);
+      })
+      .catch((error) => {
+        if (active) toast.error(error.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const stream = streamRef.current;
+    if (stream) stream.scrollTop = stream.scrollHeight;
+  }, [messages, pending]);
+
+  const grow = useCallback(() => {
+    const field = inputRef.current;
+    if (!field) return;
+    field.style.height = "auto";
+    field.style.height = `${Math.min(field.scrollHeight, 220)}px`;
+  }, []);
+
+  const send = useCallback(
+    async (text) => {
+      const content = text.trim();
+      if (!content || pending) return;
+
+      setDraft("");
+      requestAnimationFrame(grow);
+      setMessages((previous) => [...previous, { role: "user", content }]);
+      setPending(true);
+
+      try {
+        const data = await sendChatRequest(content);
+        if (!data?.chats) throw new Error("The assistant returned an empty reply.");
+        setMessages(data.chats);
+      } catch (error) {
+        toast.error(error.message);
+        // Put the text back rather than losing what they typed.
+        setMessages((previous) => previous.slice(0, -1));
+        setDraft(content);
+      } finally {
+        setPending(false);
+      }
     },
-};
+    [pending, grow]
+  );
 
-const Chat = () => {
-    const navigate = useNavigate();
-    const inputRef = useRef(null);
-    const auth = useAuth();
-    const [chatMessages, setChatMessages] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const messagesEndRef = useRef(null);
-    const [typingMessage, setTypingMessage] = useState(null);
-    const [typingIndex, setTypingIndex] = useState(0);
+  const clear = useCallback(async () => {
+    setConfirmClear(false);
+    const snapshot = messages;
+    setMessages([]);
+    try {
+      await deleteUserChats();
+      toast.success("Conversation cleared");
+    } catch (error) {
+      setMessages(snapshot);
+      toast.error(error.message);
+    }
+  }, [messages]);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+  const firstName = user?.name?.split(" ")[0] ?? "there";
+  const empty = !loading && messages.length === 0 && !pending;
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [chatMessages, isLoading, typingIndex]);
+  return (
+    <div className="chat">
+      <aside className="chat__rail">
+        <div className="chat__who">
+          <span className="chat__avatar" aria-hidden="true">
+            {firstName.charAt(0).toUpperCase()}
+          </span>
+          <span className="chat__who-text">
+            <span className="chat__name">{user?.name}</span>
+            <span className="code chat__email">{user?.email}</span>
+          </span>
+        </div>
 
-    const handleSubmit = async () => {
-        const content = inputRef.current?.value.trim();
-        if (!content) {
-            toast.error('Please enter a message');
-            return;
-        }
+        <p className="chat__rail-note">
+          Answers are written from SNOMED&nbsp;CT dermatology concepts retrieved
+          for your question. This is not a diagnosis.
+        </p>
 
-        if (inputRef.current) inputRef.current.value = '';
-
-        const newMessage = { role: 'user', content };
-        setChatMessages((prev) => [...prev, newMessage]);
-        setIsLoading(true);
-
-        try {
-            const chatData = await sendChatRequest(content);
-            if (chatData && chatData.chats) {
-                setChatMessages([...chatData.chats]);
-                setIsLoading(false);
-            } else if (chatData && chatData.message) {
-                const assistantMessage = { role: 'assistant', content: chatData.message };
-                setTypingMessage(assistantMessage);
-                setTypingIndex(0);
-            } else {
-                throw new Error('Invalid response from server');
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error('Failed to send message');
-            setIsLoading(false);
-        }
-    };
-
-    const handleDeleteChats = async () => {
-        try {
-            toast.loading('Deleting Chats', { id: 'deletechats' });
-            await deleteUserChats();
-            setChatMessages([]);
-            toast.success('Deleted Chats Successfully', { id: 'deletechats' });
-        } catch (error) {
-            console.error(error);
-            toast.error('Deleting chats failed', { id: 'deletechats' });
-        }
-    };
-
-    useEffect(() => {
-        if (auth?.isLoggedIn && auth.user) {
-            toast.loading('Loading Chats', { id: 'loadchats' });
-            getUserChats()
-                .then((data) => {
-                    if (data && data.chats) {
-                        setChatMessages([...data.chats]);
-                        toast.success('Successfully loaded chats', { id: 'loadchats' });
-                    } else {
-                        toast.error('No chat history found', { id: 'loadchats' });
-                    }
-                })
-                .catch((err) => {
-                    console.error(err);
-                    toast.error('Loading Failed', { id: 'loadchats' });
-                });
-        }
-    }, [auth]);
-
-    useEffect(() => {
-        if (!auth?.user) navigate('/login');
-    }, [auth, navigate]);
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-
-        return () => {
-            document.body.style.overflow = 'auto';
-        };
-    }, []);
-    useEffect(() => {
-        if (typingMessage && typingMessage.content) {
-            if (typingIndex < typingMessage.content.length) {
-                const timeout = setTimeout(() => {
-                    setTypingIndex((prev) => prev + 1);
-                }, 30);
-
-                return () => clearTimeout(timeout);
-            } else {
-                setChatMessages((prev) => [...prev, typingMessage]);
-                setTypingMessage(null);
-                setTypingIndex(0);
-                setIsLoading(false);
-            }
-        }
-    }, [typingIndex, typingMessage]);
-
-    return (
-        <PageWrapper>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flex: 1,
-                    justifyContent: 'center',
-                    maxWidth: '70vw',
-                    minWidth: '30rem',
-                    minHeight: '80vh',
-                    alignItems: 'center',
-                    gap: { xs: 2, sm: 3 },
-                    flexDirection: { xs: 'column', md: 'row' },
-                    margin: '0 auto',
-                    backgroundColor: '#9AA6B2',
-                    borderRadius: '25px',
-                    padding: { xs: 2, sm: 3 },
-                    boxSizing: 'border-box',
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flex: 3,
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '100%',
-                        borderRadius: '10px',
-                        padding: { xs: 1, sm: 2 },
-                        height: { xs: 'auto', md: '80vh' },
-                    }}
+        <div className="chat__rail-foot">
+          {confirmClear ? (
+            <div className="chat__confirm">
+              <p className="chat__confirm-text">
+                Clear the whole conversation? This cannot be undone.
+              </p>
+              <div className="chat__confirm-actions">
+                <button type="button" className="chat__danger" onClick={clear}>
+                  Clear it
+                </button>
+                <button
+                  type="button"
+                  className="chat__quiet"
+                  onClick={() => setConfirmClear(false)}
                 >
-                    <Box
-                        sx={{
-                            flex: 1,
-                            borderRadius: 3,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minWidth: '50vw',
-                            width: '100%',
+                  Keep it
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="chat__quiet chat__clear"
+              onClick={() => setConfirmClear(true)}
+              disabled={messages.length === 0}
+            >
+              <FiTrash2 aria-hidden="true" />
+              Clear conversation
+            </button>
+          )}
+        </div>
+      </aside>
 
-                            overflow: 'auto',
-                            bgcolor: '#F8FAFC',
-                            mb: 1,
-                            maxHeight: { xs: '60vh', md: '80vh' },
-                        }}
-                    >
-                        {chatMessages.length === 0 && !isLoading && !typingMessage ? (
-                            <Typography sx={{
-                                textAlign: 'center',
-                                color: '#999',
-                                mt: { xs: '10%', sm: '15%', md: '20%' },
-                                px: { xs: 1, sm: 2 },
-                                fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' }
-                            }}>
-                                {auth?.user?.name
-                                    ? getGreetingMessage(auth.user.name)
-                                    : 'Welcome to DERM-AI! 👋'}
-                            </Typography>
-                        ) : (
-                            <>
-                                {chatMessages.map((chat, index) => (
-                                    <ChatItem content={chat.content} role={chat.role} key={index} />
-                                ))}
+      <main className="chat__main">
+        <div className="chat__stream" ref={streamRef}>
+          <div className="chat__column">
+            {empty ? (
+              <motion.div
+                className="chat__empty"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+              >
+                <p className="eyebrow">Presenting complaint</p>
+                <h1 className="display chat__empty-title">
+                  What is going on, {firstName}?
+                </h1>
+                <p className="prose chat__empty-body">
+                  Describe it however it comes out. Where it is, how long it has
+                  been there, what it feels like. Plain words are enough.
+                </p>
 
-                                {typingMessage && (
-                                    <ChatItem
-                                        content={typingMessage.content.substring(0, typingIndex)}
-                                        role={typingMessage.role}
-                                        isTyping
-                                    />
-                                )}
+                <ul className="openers">
+                  {OPENERS.map((opener) => (
+                    <li key={opener}>
+                      <button type="button" className="opener" onClick={() => send(opener)}>
+                        <span className="opener__text">“{opener}”</span>
+                        <FiArrowUp className="opener__icon" aria-hidden="true" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ) : (
+              <div className="chat__messages">
+                {messages.map((message, index) => (
+                  <Message
+                    key={`${message.role}-${index}-${message.content.slice(0, 12)}`}
+                    role={message.role}
+                    content={message.content}
+                  />
+                ))}
+                <AnimatePresence>{pending && <Thinking />}</AnimatePresence>
+              </div>
+            )}
+          </div>
+        </div>
 
-                                {isLoading && !typingMessage && (
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        p: { xs: 1, sm: 2 },
-                                        gap: { xs: 1, sm: 2 }
-                                    }}>
-                                        <Skeleton
-                                            height="10em"
-                                            width="80%"
-                                            style={{ marginBottom: 6, borderRadius: "25px" }}
-                                        />
-                                    </Box>
-                                )}
-                            </>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </Box>
-
-                    <Box sx={{
-                        width: '100%',
-                        borderRadius: '20px',
-                        backgroundColor: '#E5E1DA',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: { xs: '3px 8px', sm: '5px 10px' },
-                        gap: { xs: 1, sm: 2 }
-                    }}>
-                        <input
-                            ref={inputRef}
-                            type='text'
-                            placeholder='Start typing...'
-                            style={{
-                                flex: 1,
-                                height: '2rem',
-                                backgroundColor: '#F1F0E8',
-                                padding: { xs: '8px', sm: '10px' },
-                                border: 'none',
-                                borderRadius: '20px',
-                                fontSize: { xs: '14px', sm: '16px' },
-                                outline: 'none'
-                            }}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                        />
-                        <IconButton
-                            onClick={handleSubmit}
-                            sx={{
-                                color: 'white',
-                                backgroundColor: '#7E60BF',
-                                padding: { xs: '8px', sm: '10px' },
-                                '&:hover': { backgroundColor: '#654A99' }
-                            }}
-                        >
-                            <IoMdSend size={20} />
-                        </IconButton>
-                        <IconButton
-                            onClick={handleDeleteChats}
-                            sx={{
-                                color: 'white',
-                                backgroundColor: '#E74C3C',
-                                padding: { xs: '8px', sm: '10px' },
-                                '&:hover': { backgroundColor: '#C0392B' }
-                            }}
-                        >
-                            <IoMdTrash size={20} />
-                        </IconButton>
-                    </Box>
-
-                </Box>
-            </Box>
-        </PageWrapper>
-    );
-};
-
-export default Chat;
+        <form
+          className="composer"
+          onSubmit={(event) => {
+            event.preventDefault();
+            send(draft);
+          }}
+        >
+          <div className="composer__inner">
+            <label className="sr-only" htmlFor="chat-input">Your question</label>
+            <textarea
+              id="chat-input"
+              ref={inputRef}
+              rows={1}
+              className="composer__input"
+              placeholder="Describe what you are seeing…"
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.target.value);
+                grow();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  send(draft);
+                }
+              }}
+            />
+            <button
+              type="submit"
+              className="composer__send"
+              disabled={pending || !draft.trim()}
+              aria-label="Send question"
+            >
+              <FiArrowUp aria-hidden="true" />
+            </button>
+          </div>
+          <p className="composer__hint code">
+            Enter to send · Shift + Enter for a new line
+          </p>
+        </form>
+      </main>
+    </div>
+  );
+}

@@ -1,26 +1,19 @@
-import { useNavigate } from 'react-router-dom';
-import './NotFound.css';
+import { Link } from "react-router-dom";
+import "./NotFound.css";
 
-const NotFound = () => {
-    const navigate = useNavigate();
-
-    return (
-        <div className="not-found-container">
-            <div className="not-found-box">
-                <div className="error-code">404</div>
-                <h1>Page Not Found</h1>
-                <p className="error-message">
-                    Oops! The page you&apos;re looking for doesn&apos;t exist or has been moved.
-                </p>
-                <button
-                    className="home-button"
-                    onClick={() => navigate('/')}
-                >
-                    Return to Home
-                </button>
-            </div>
-        </div>
-    );
-};
-
-export default NotFound;
+export default function NotFound() {
+  return (
+    <section className="lost shell">
+      <p className="eyebrow">No such record</p>
+      <h1 className="display lost__title">Nothing at this address.</h1>
+      <p className="prose lost__body">
+        The page you asked for is not part of DermAI. Head back to the overview,
+        or go straight to your conversation.
+      </p>
+      <div className="lost__actions">
+        <Link to="/" className="btn">Back to overview</Link>
+        <Link to="/chat" className="btn btn--ghost">Open the assistant</Link>
+      </div>
+    </section>
+  );
+}

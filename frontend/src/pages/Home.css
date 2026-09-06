@@ -1,0 +1,262 @@
+/* ---------- Hero ---------- */
+.hero { padding-top: clamp(2.5rem, 7vh, 6rem); }
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
+  align-items: center;
+  padding-bottom: clamp(3rem, 8vh, 6rem);
+}
+
+.hero__title {
+  font-size: var(--step-5);
+  margin: 1.4rem 0 2rem;
+  max-width: 15ch;
+}
+
+/* The display face is set at line-height 0.92, so the reveal mask has to be
+   padded past the baseline or it clips descenders. The negative margin keeps
+   the line spacing where the type scale put it. */
+.hero__word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-right: 0.24em;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+.hero__word-inner { display: inline-block; }
+
+/* The final clause is the instruction, so it carries the accent. */
+.hero__word:nth-last-child(-n + 3) .hero__word-inner { color: var(--ochre); }
+
+.hero__prose { font-size: var(--step-1); }
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.4rem;
+}
+
+.hero__hint {
+  margin-top: 0.9rem;
+  color: var(--faint);
+  text-align: right;
+}
+
+/* ---------- Ticker ---------- */
+.ticker {
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+  padding-block: 0.85rem;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.ticker__track {
+  display: flex;
+  width: max-content;
+  gap: 3rem;
+  animation: ticker-run 52s linear infinite;
+}
+
+.ticker__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  white-space: nowrap;
+}
+
+.ticker__id {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker__term {
+  font-family: var(--body);
+  font-size: var(--step-0);
+  color: var(--dim);
+}
+
+@keyframes ticker-run {
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- Section chrome ---------- */
+.section { padding-block: var(--section); }
+
+.section__head {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.section__title {
+  font-size: var(--step-3);
+  max-width: 20ch;
+}
+
+/* ---------- History ---------- */
+.complaints {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.complaints__item {
+  border-bottom: 1px solid var(--line);
+  padding: 1.35rem 0;
+  transition: padding-left 0.5s var(--ease), color 0.5s var(--ease);
+}
+
+.complaints__item:hover { padding-left: 1rem; }
+
+.complaints__quote {
+  font-family: var(--body);
+  font-size: var(--step-1);
+  font-style: italic;
+  color: var(--dim);
+  transition: color 0.4s var(--ease);
+}
+
+.complaints__item:hover .complaints__quote { color: var(--milk); }
+
+.complaints__foot { margin-top: 2.4rem; }
+
+/* ---------- Examination ---------- */
+.exam { border-top: 1px solid var(--line); }
+
+.exam__row {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 20rem) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  align-items: start;
+  padding-block: clamp(1.8rem, 4vh, 3rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.exam__step {
+  color: var(--ochre);
+  font-size: var(--step-0);
+  letter-spacing: 0.1em;
+  padding-top: 0.35em;
+}
+
+.exam__title {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 112, "wght" 600;
+  font-size: var(--step-2);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+.exam__body {
+  font-family: var(--body);
+  font-size: var(--step-1);
+  line-height: 1.6;
+  color: var(--dim);
+  max-width: 52ch;
+}
+
+/* ---------- Impression ---------- */
+.cards {
+  display: grid;
+  /* auto-fit left an empty fourth track at wide widths, which the 1px gap
+     then drew as a stray rule. Three cards, three columns. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.card {
+  background: var(--surface);
+  padding: clamp(1.6rem, 3vw, 2.6rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transition: background 0.5s var(--ease);
+}
+
+.card:hover { background: var(--raised); }
+
+.card__label {
+  color: var(--ochre);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.card__title {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 110, "wght" 600;
+  font-size: var(--step-2);
+  line-height: 1.1;
+  margin-top: 1.5rem;
+}
+
+.card__body {
+  font-family: var(--body);
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+/* ---------- Advice ---------- */
+/* The limits get a full section and the cold veil colour, because burying
+   them in 10px grey type would be the dishonest choice. */
+.advice {
+  background: var(--umber-800);
+  border-block: 1px solid var(--line);
+}
+
+.advice__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.advice__title {
+  font-size: var(--step-3);
+  color: var(--veil);
+  margin-top: 1rem;
+  max-width: 14ch;
+}
+
+.advice__body + .advice__body { margin-top: 1.4rem; }
+
+/* ---------- Closing ---------- */
+.cta__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2.4rem;
+}
+
+.cta__title {
+  font-size: var(--step-4);
+  max-width: 16ch;
+}
+
+.cta__btn { padding: 1.15em 2.2em; }
+
+@media (max-width: 980px) {
+  .hero__grid { grid-template-columns: 1fr; }
+  .hero__title { max-width: 16ch; }
+  .hero__hint { text-align: left; }
+  .cards { grid-template-columns: 1fr; }
+  .exam__row { grid-template-columns: 3.5rem 1fr; }
+  .exam__body { grid-column: 2; }
+  .advice__grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .exam__row { grid-template-columns: 1fr; gap: 0.8rem; }
+  .exam__body { grid-column: 1; }
+}

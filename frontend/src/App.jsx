@@ -1,31 +1,47 @@
-import Header from "./components/Header";
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import Nav from "./components/Nav";
+import Footer from "./components/Footer";
+import Grain from "./components/Grain";
+import ServiceStatus from "./components/ServiceStatus";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Features from "./pages/Features";
+import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
-import { useAuth } from "./context/AuthContext";
-import Features from "./pages/Features";
 
-function App() {
-  const auth = useAuth();
+export default function App() {
+  const { pathname } = useLocation();
+  /* The assistant owns the full viewport; a marketing footer under it would
+     just push the composer off screen. */
+  const bare = pathname === "/chat";
+
   return (
-    <main>
-      <Header />
-      <Routes >
-        <Route path="/" element={<Home />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        {auth?.isLoggedIn && auth.user && (
-          <Route path="/chat" element={<Chat />} />
-        )}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+    <>
+      <Grain />
+      <a className="skip-link" href="#main">Skip to content</a>
+      <Nav />
 
-    </main>
+      <main id="main">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/login" element={<Auth mode="login" />} />
+          <Route path="/signup" element={<Auth mode="signup" />} />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+
+      {!bare && <Footer />}
+      <ServiceStatus />
+    </>
   );
 }
-
-export default App;

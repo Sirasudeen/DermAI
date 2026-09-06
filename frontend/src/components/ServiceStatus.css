@@ -1,0 +1,145 @@
+/* Pinned low-right so it reads as a note clipped to the chart, never as a modal
+   standing between the reader and the page. */
+.status {
+  position: fixed;
+  right: var(--gutter);
+  bottom: clamp(1rem, 3vh, 2rem);
+  z-index: 50;
+  width: min(24rem, calc(100vw - var(--gutter) * 2));
+  padding: 1.1rem 1.2rem 1.2rem;
+  background: var(--umber-800);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--veil-dim);
+  border-radius: 3px 12px 12px 3px;
+  box-shadow: 0 22px 50px rgba(10, 6, 4, 0.55);
+}
+
+.status__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--veil);
+  box-shadow: 0 0 0 0 rgba(168, 191, 208, 0.5);
+  animation: status-pulse 2.6s ease-out infinite;
+}
+
+@keyframes status-pulse {
+  70% { box-shadow: 0 0 0 9px rgba(168, 191, 208, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(168, 191, 208, 0); }
+}
+
+/* Doubles as the collapse control, so the notice can shrink to a single bar
+   instead of covering the page on a small screen. */
+.status__tag {
+  flex: 1;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--step--1);
+  color: var(--veil);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.status__close {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--faint);
+  transition: color 0.3s var(--ease);
+}
+
+.status__close:hover { color: var(--milk); }
+
+.status__body {
+  margin-top: 0.7rem;
+  font-family: var(--body);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--dim);
+}
+
+.status__notify {
+  display: inline-block;
+  margin-top: 0.95rem;
+  padding: 0.6rem 1rem;
+  background: var(--veil);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  color: var(--umber-900);
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.status__notify:hover {
+  background: var(--milk);
+  transform: translateY(-1px);
+}
+
+.status__armed {
+  margin-top: 0.9rem;
+  font-family: var(--body);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--dim);
+}
+
+.status__armed-tag {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.16rem 0.5rem;
+  border: 1px solid var(--veil-dim);
+  border-radius: 999px;
+  color: var(--veil);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.status__retry {
+  display: block;
+  margin-top: 0.8rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--faint);
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.status__retry:hover:not(:disabled) {
+  color: var(--milk);
+  border-bottom-color: var(--sepia-400);
+}
+
+.status__retry:disabled { cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .status__dot { animation: none; }
+  .status__notify:hover { transform: none; }
+}
+
+@media (max-width: 560px) {
+  .status {
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+  }
+}

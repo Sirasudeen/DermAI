@@ -1,0 +1,104 @@
+.msg {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 46rem;
+}
+
+.msg__role {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* The two turns are told apart by side and rule colour rather than by two
+   competing bubble shapes — assistant replies run long and need the width. */
+.msg--assistant .msg__role { color: var(--ochre); }
+.msg--assistant .msg__body {
+  border-left: 2px solid var(--ochre-dim);
+  padding-left: 1.3rem;
+}
+
+.msg--user {
+  margin-left: auto;
+  justify-items: end;
+  max-width: 34rem;
+}
+
+.msg--user .msg__role { color: var(--veil-dim); }
+
+.msg--user .msg__body {
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 3px 14px 14px 14px;
+  padding: 0.9rem 1.2rem;
+  color: var(--milk);
+}
+
+.msg__body {
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.68;
+  color: var(--dim);
+}
+
+.msg--assistant .msg__body { font-size: var(--step-1); }
+
+.msg__para + .msg__para,
+.msg__list + .msg__para,
+.msg__para + .msg__list { margin-top: 0.9rem; }
+
+.msg__heading {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 110, "wght" 600;
+  font-size: var(--step-1);
+  color: var(--milk);
+  margin-top: 1.3rem;
+}
+
+.msg__list {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+  counter-reset: msg-item;
+}
+
+.msg__list li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.msg__list li::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.72em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ochre-dim);
+}
+
+.msg__list--ordered li { counter-increment: msg-item; }
+
+.msg__list--ordered li::before {
+  content: counter(msg-item);
+  top: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--ochre);
+}
+
+.msg__body strong { color: var(--milk); font-weight: 600; }
+.msg__body em { color: var(--milk); font-style: italic; }
+
+.msg__term {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  color: var(--veil);
+  background: rgba(168, 191, 208, 0.09);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+}
